@@ -171,9 +171,9 @@ function getBuildConfig(env: Record<string, string>) {
 				injectRegister: false,
 				useCredentials: true,
 				manifest: {
-					name: 'Vikunja',
-					short_name: 'Vikunja',
-					theme_color: '#1973ff',
+					name: 'DATAGROUP · Projekte',
+					short_name: 'Projekte',
+					theme_color: '#c8102e',
 					icons: [
 						{
 							src: './images/icons/android-chrome-192x192.png',

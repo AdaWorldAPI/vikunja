@@ -75,7 +75,11 @@
 			<h3 class="has-text-centered mbs-6">
 				{{ $t('task.show.noTasks') }}
 			</h3>
-			<LlamaCool class="llama-cool" />
+			<img
+				:src="DatagroupSail"
+				class="llama-cool"
+				alt=""
+			>
 		</template>
 
 		<Card
@@ -123,7 +127,8 @@ import SingleTaskInProject from '@/components/tasks/partials/SingleTaskInProject
 import DatepickerWithRange from '@/components/date/DatepickerWithRange.vue'
 import XLabel from '@/components/tasks/partials/Label.vue'
 import {DATE_RANGES} from '@/components/date/dateRanges'
-import LlamaCool from '@/assets/llama-cool.svg?component'
+// DATAGROUP branding: the empty-state illustration (upstream: llama-cool.svg)
+import DatagroupSail from '@/assets/datagroup-sail.png'
 import {useAuthStore} from '@/stores/auth'
 import {useProjects} from '@/composables/useProjects'
 import {useLabels} from '@/composables/useLabels'
@@ -332,6 +337,8 @@ watchEffect(() => setTitle(pageTitle.value))
 .llama-cool {
 	margin: 3rem auto 0;
 	display: block;
+	inline-size: min(320px, 70vw);
+	block-size: auto;
 }
 
 .label-filter-info {
