@@ -246,10 +246,10 @@
   --danger-text-l: 40%;
   --danger-text: hsla(var(--danger-h), var(--danger-s), var(--danger-text-l), var(--danger-a));
 
-  // var(--primary) / $blue is #1973ff
-  --primary-h: 217deg;
-  --primary-s: 98%;
-  --primary-l: 53%;
+  // DATAGROUP branding: var(--primary) is DG red #c8102e (upstream: #1973ff, 217deg 98% 53%)
+  --primary-h: 350deg;
+  --primary-s: 85%;
+  --primary-l: 42%;
   --primary-a: 1;
   --primary-hsl: var(--primary-h), var(--primary-s), var(--primary-l);
   --primary: hsla(var(--primary-h), var(--primary-s), var(--primary-l), var(--primary-a));
@@ -326,9 +326,10 @@
       --logo-text-color: var(--grey-700);
 
       // Slightly different primary color to make sure it has a sufficient contrast ratio
-      --primary-h: 217deg;
-      --primary-s: 98%;
-      --primary-l: 58%;
+      // DATAGROUP branding: DG red, lightened for dark backgrounds (upstream: 217deg 98% 58%)
+      --primary-h: 350deg;
+      --primary-s: 80%;
+      --primary-l: 55%;
 
       // Muted text is a light grey on dark backgrounds and already passes; keep it
       --text-muted: var(--grey-500);
