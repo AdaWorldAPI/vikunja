@@ -1,0 +1,41 @@
+# Railway build. The main Dockerfile cross-compiles through the xgo image, which
+# Railway's builder stops part-way through the Go compile (no error in the log).
+# This builds natively instead: same frontend, plain `go build` with cgo for SQLite,
+# and capped build parallelism to keep peak memory down.
+
+FROM node:24.21.0-alpine AS frontendbuilder
+WORKDIR /build
+ENV PNPM_CACHE_FOLDER=.cache/pnpm/
+ENV PUPPETEER_SKIP_DOWNLOAD=true
+ENV CYPRESS_INSTALL_BINARY=0
+COPY frontend/pnpm-lock.yaml frontend/package.json frontend/pnpm-workspace.yaml ./
+RUN npm install -g corepack && corepack enable && pnpm install --frozen-lockfile
+COPY frontend/ ./
+ARG RELEASE_VERSION=dev
+RUN echo "{\"VERSION\": \"${RELEASE_VERSION}\"}" > src/version.json && pnpm run build
+
+FROM golang:1.27-bookworm AS apibuilder
+WORKDIR /src
+COPY go.mod go.sum ./
+RUN go mod download
+COPY . ./
+COPY --from=frontendbuilder /build/dist ./frontend/dist
+ARG RELEASE_VERSION=dev
+ENV CGO_ENABLED=1 GOFLAGS=-p=2
+RUN go build -trimpath -tags osusergo \
+      -ldflags "-s -w -X code.vikunja.io/api/pkg/version.Version=${RELEASE_VERSION}" \
+      -o /out/vikunja . \
+ && mkdir -p /out/tmp && chmod 1777 /out/tmp
+
+FROM debian:bookworm-slim
+RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates tzdata \
+ && rm -rf /var/lib/apt/lists/*
+WORKDIR /app/vikunja
+COPY --from=apibuilder /out/vikunja /app/vikunja/vikunja
+ENV VIKUNJA_SERVICE_ROOTPATH=/app/vikunja/
+ENV VIKUNJA_DATABASE_PATH=/db/vikunja.db
+# Same as the main Dockerfile: disable MPTCP on listen sockets (CVE-2026-98432).
+ENV GODEBUG=multipathtcp=0
+EXPOSE 3456
+USER 1000
+ENTRYPOINT ["/app/vikunja/vikunja"]
